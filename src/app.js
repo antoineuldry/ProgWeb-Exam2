@@ -5,12 +5,10 @@ import { Notyf } from 'notyf';
 import 'notyf/notyf.min.css';
 const notyf = new Notyf();
 
-import { get, shuffle } from "lodash";
+import { shuffle } from "lodash";
 
 const form = utils.$('form');
 const inputLabel = utils.$('input');
-const flagLabel = utils.$('flag');
-const flagImg = utils.$('img');
 const scoreLabel = document.getElementById('score');
 const highscoreLabel = document.getElementById('highscore');
 
@@ -19,13 +17,11 @@ const getCountries = async () => {
         const response = await fetch('https://restcountries.com/v3.1/all');
         const data = await response.json();
         const countries = data.map(country => {
-            const translations = get(country, 'translations', {});
-
-            // const flags = country.flags || {};
+            const translations = country.translations || {};
 
             return {
                 translations,
-                flags: country.flags || {} // OU get(country, 'flags', {})
+                flags: country.flags || {}
             };
         });
         return shuffle(countries);
@@ -51,8 +47,6 @@ const startGame = async () => {
 
         scoreLabel.textContent = `Score: ${game.score}`;
 
-        // score plus grand que highscore
-
         if (game.score > game.highscore) {
             game.highscore = game.score;
             highscoreLabel.textContent = `Highscore: ${game.highscore}`;
@@ -61,9 +55,6 @@ const startGame = async () => {
 
         game.nextCountry();
         inputLabel.value = '';
-
-        flagLabel.textContent = game.currentCountry.flag;
-        flagImg.src = game.currentCountry.flag;
 
         if (game.isGameOver()) {
             notyf.success('Game Over!');
